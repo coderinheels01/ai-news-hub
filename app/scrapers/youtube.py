@@ -6,7 +6,7 @@ import feedparser
 from feedparser import FeedParserDict
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import time
 from enum import Enum
 import pprint
@@ -94,19 +94,23 @@ class YouTubeScraper:
             self._get_rss_feed_url(channel_id=channel_id)
         )
         videos: list[YouTubeVideo] = []
+        cut_off_time: datetime = datetime.now(timezone.utc) - timedelta(hours)
         for entry in rss_feed.entries:
-            published_time = datetime(*entry.published_parsed[:6])
-            video_id: str = self._get_video_id(entry.link)
-            transcript: YouTubeTranscript = self._get_transcript(video_id=video_id)
-            pprint.pprint(transcript)
-            video = YouTubeVideo(
-                title=entry.title,
-                url=entry.link,
-                video_id=video_id,
-                published_at=published_time,
-                description=entry.get("summary", ""),
+            published_time: datetime = datetime(
+                *entry.published_parsed[:6], tzinfo=timezone.utc
             )
-            videos.append(video)
+            if published_time >= cut_off_time:
+                video_id: str = self._get_video_id(entry.link)
+                transcript: YouTubeTranscript = self._get_transcript(video_id=video_id)
+                pprint.pprint(transcript)
+                video = YouTubeVideo(
+                    title=entry.title,
+                    url=entry.link,
+                    video_id=video_id,
+                    published_at=published_time,
+                    description=entry.get("summary", ""),
+                )
+                videos.append(video)
 
         return videos
 
