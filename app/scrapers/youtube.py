@@ -39,11 +39,11 @@ class YouTubeScraper:
         print(f"PROXY_USERNAME: {os.getenv('PROXY_USERNAME')}")
         print(f"PROXY_PASSWORD: {os.getenv('PROXY_PASSWORD')}")
 
-        if proxy_username and proxy_password:
-            print("DEBUGGER: using webshare proxy")
-            proxy_config = WebshareProxyConfig(
-                proxy_username=proxy_username, proxy_password=proxy_password
-            )
+        # if proxy_username and proxy_password:
+        #     print("DEBUGGER: using webshare proxy")
+        #     proxy_config = WebshareProxyConfig(
+        #         proxy_username=proxy_username, proxy_password=proxy_password
+        #     )
         self.youtube_transcript_api = YouTubeTranscriptApi(proxy_config=proxy_config)
         self.last_request: float = 0
         self.rate_limit_per_second = rate_limit_per_second
