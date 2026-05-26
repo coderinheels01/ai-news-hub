@@ -6,5 +6,7 @@ Step 3: install dependency
         uv add sqlalchemy psycopg2-binary requests feedparser beautifulsoup4 python-dotenv openai
 Step 4:  uv add ipykernel --dev
 Step 5: https://openai.com/news/
+        https://openai.com/news/rss.xml
         https://www.anthropic.com/engineering
 Step 6: uv add youtube_transcript_api
+
