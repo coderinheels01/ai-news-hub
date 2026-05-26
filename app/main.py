@@ -11,8 +11,12 @@ from scrapers.article import Article
 
 if __name__ == "__main__":
     openai_article_scraper = OpenAIArticleScraper()
-    articles: list[Article] = openai_article_scraper.get_articles(hours=48)
-    pprint.pprint(articles)
+    open_ai_articles: list[Article] = openai_article_scraper.get_articles(hours=48)
+    pprint.pprint(open_ai_articles)
     anthropic_article_scraper = AnthropicArticleScraper()
-    articles: list[Article] = anthropic_article_scraper.get_articles(hours=48)
-    pprint.pprint(articles)
+    anthropic_articles: list[Article] = anthropic_article_scraper.get_articles(hours=48)
+    pprint.pprint(anthropic_articles)
+    if len(anthropic_articles) > 0:
+        markdown:str = anthropic_article_scraper.url_to_mark_down(anthropic_articles[0].url)
+        print(markdown)
+
