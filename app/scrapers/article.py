@@ -10,6 +10,7 @@ from pydantic import BaseModel
 class Article(BaseModel):
     title: str
     description: str | None
+    source: str
     url: str
     guid: str
     published_at: datetime
@@ -20,7 +21,7 @@ class ArticleScraper:
     def __init__(self, rss_urls: list[str]):
         self.rss_urls = rss_urls
 
-    def get_articles(self, hours: int = 24) -> list[Article]:
+    def get_articles(self, source: str,  hours: int = 24) -> list[Article]:
         articles: list[Article] = []
 
         cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
@@ -28,6 +29,8 @@ class ArticleScraper:
         for rss_url in self.rss_urls:
             feed: FeedParserDict = feedparser.parse(rss_url)
 
+            print(f"=== entries ===")
+            pprint.pprint(feed.entries)
             for entry in feed.entries:
                 published_parsed = entry.get("published_parsed", None)
 
@@ -47,9 +50,10 @@ class ArticleScraper:
                         category = (
                             [first_tag.get("term")] if first_tag.get("term") else None
                         )
-
+            
                     article: Article = Article(
                         title=entry.get("title"),
+                        source = source,
                         description=entry.get("summary"),
                         url=entry.get("link"),
                         guid=entry.get("id", entry.get("link", "")),
@@ -63,7 +67,7 @@ class ArticleScraper:
 
 if __name__ == "__main__":
     article_scraper = ArticleScraper(["https://openai.com/news/rss.xml"])
-    articles = article_scraper.get_articles(hours=24)
+    articles = article_scraper.get_articles(hours=24 ,source="OpenAI")
     print("---DONE---")
     print(f"Found {len(articles)} articles")
     for article in articles:

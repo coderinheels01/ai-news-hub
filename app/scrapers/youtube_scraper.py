@@ -27,6 +27,7 @@ class YouTubeVideo(BaseModel):
     title: str
     url: str
     video_id: str
+    channel_id: str
     published_at: datetime
     description: str
     transcript: Optional[str] = None
@@ -102,21 +103,25 @@ class YouTubeScraper:
             )
             if published_time >= cut_off_time:
                 video_id: str = self._get_video_id(entry.link)
-                transcript: YouTubeTranscript = self._get_transcript(video_id=video_id)
-                pprint.pprint(transcript)
                 video = YouTubeVideo(
                     title=entry.title,
                     url=entry.link,
                     video_id=video_id,
+                    channel_id=channel_id,
                     published_at=published_time,
-                    description=entry.get("summary", ""),
+                    description=entry.get("summary", "˛"),
                 )
                 videos.append(video)
 
         return videos
 
     def scrape(self, channel_id: str, hours: int = 150) -> list[YouTubeVideo]:
-        return self._get_latest_videos(channel_id=channel_id, hours=hours)
+        videos:list[YouTubeVideo] = self._get_latest_videos(channel_id=channel_id, hours=hours)
+        for video in videos:
+            transcript: YouTubeTranscript = self._get_transcript(video_id=video_id)
+            pprint.pprint(transcript)
+            video.transcript = transcript
+        return videos
 
 
 if __name__ == "__main__":

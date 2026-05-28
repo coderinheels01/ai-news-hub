@@ -3,7 +3,7 @@ import pprint
 
 from docling.document_converter import DocumentConverter
 
-from scrapers.article import Article, ArticleScraper
+from app.scrapers.article import Article, ArticleScraper
 
 
 class AnthropicArticleScraper(ArticleScraper):
@@ -23,3 +23,6 @@ class AnthropicArticleScraper(ArticleScraper):
             return result.document.export_to_markdown()
         except Exception:
             return None
+
+    def get_articles(self, hours: int =24) -> list[Article]:
+        return super().get_articles(hours=hours, source="Anthropic")
