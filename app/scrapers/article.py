@@ -5,6 +5,7 @@ from time import time
 import feedparser
 from feedparser import FeedParserDict
 from pydantic import BaseModel
+from docling.document_converter import DocumentConverter
 
 
 class Article(BaseModel):
@@ -20,6 +21,16 @@ class Article(BaseModel):
 class ArticleScraper:
     def __init__(self, rss_urls: list[str]):
         self.rss_urls = rss_urls
+
+    @staticmethod
+    def url_to_mark_down(url: str) -> str | None:
+        """Convert a URL to markdown using DocumentConverter."""
+        try:
+            document_converter = DocumentConverter()
+            result = document_converter.convert(url)
+            return result.document.export_to_markdown()
+        except Exception:
+            return None
 
     def get_articles(self, source: str,  hours: int = 24) -> list[Article]:
         articles: list[Article] = []

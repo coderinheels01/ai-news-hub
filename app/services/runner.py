@@ -12,7 +12,6 @@ from config import YOUTUBE_CHANNELS
 from app.scrapers.youtube_scraper import YouTubeScraper, YouTubeVideo
 from config import YOUTUBE_CHANNELS
 from app.database.repoisitory import bulk_insert_youtube_videos, bulk_insert_articles
-
 def run_scrapers():
     youtube_scraper = YouTubeScraper()
     videos: list[YouTubeVideo] = []

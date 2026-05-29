@@ -7,7 +7,7 @@ sys.path.append(current_path)
 
 from scrapers.anthropic_scraper import AnthropicArticleScraper
 from scrapers.openai_scraper import OpenAIArticleScraper
-from scrapers.article import Article
+from scrapers.article import Article, ArticleScraper
 
 if __name__ == "__main__":
     openai_article_scraper = OpenAIArticleScraper()
@@ -17,6 +17,6 @@ if __name__ == "__main__":
     anthropic_articles: list[Article] = anthropic_article_scraper.get_articles(hours=48)
     pprint.pprint(anthropic_articles)
     if len(anthropic_articles) > 0:
-        markdown:str = anthropic_article_scraper.url_to_mark_down(anthropic_articles[0].url)
+        markdown: str = ArticleScraper.url_to_mark_down(anthropic_articles[0].url)
         print(markdown)
 
