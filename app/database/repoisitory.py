@@ -45,3 +45,16 @@ def get_all_articles_without_markdown() -> list[ArticleSchema]:
     with db_connection.get_session() as session:
         return session.query(ArticleSchema).filter_by(markdown = None).all()
 
+def update_youtube_transcript(video_id: str, transcript:str):
+    with db_connection.get_session() as session:
+        video = session.query(YouTubeVideoSchema).filter_by(video_id=video_id).first()
+        if video:
+            video.transcript = transcript
+            session.commit()
+            return True
+    return False
+    
+def get_all_youtube_videos_without_markdown() -> list[YouTubeVideoSchema]:
+    with db_connection.get_session() as session:
+        return session.query(YouTubeVideoSchema).filter_by(transcript = None).all()
+
