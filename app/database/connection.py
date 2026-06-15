@@ -1,11 +1,12 @@
 import os
-from typing import Generator
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, Engine
-from sqlalchemy.orm import sessionmaker, Session
+from collections.abc import Generator
 
+from dotenv import load_dotenv
+from sqlalchemy import Engine, create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 load_dotenv()
+
 
 class Connection:
     def __init__(self):
@@ -21,10 +22,10 @@ class Connection:
         port: str = os.getenv("POSTGRES_PORT", "5432")
         db: str = os.getenv("POSTGRES_DB", "ai_news_hub")
         return f"postgresql://{user}:{password}@{host}:{port}/{db}"
-    
+
     def get_session(self) -> Session:
         return self.SessionLocal()
-    
+
     def get_session_context(self) -> Generator[Session, None, None]:
         """Context manager for database sessions with automatic cleanup"""
         session = self.SessionLocal()
@@ -36,7 +37,7 @@ class Connection:
             raise
         finally:
             session.close()
-    
+
     def get_engine(self) -> Engine:
         return self.engine
 
@@ -51,5 +52,3 @@ if __name__ == "__main__":
     print(f"Session type: {type(session)}")
     print(f"SessionLocal type: {type(db_connection.SessionLocal)}")
     session.close()  # Don't forget to close the session
-
-

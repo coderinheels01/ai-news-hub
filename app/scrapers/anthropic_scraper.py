@@ -1,6 +1,3 @@
-import os
-import pprint
-
 from app.scrapers.article import Article, ArticleScraper
 
 

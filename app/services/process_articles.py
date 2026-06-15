@@ -1,11 +1,12 @@
-from app.database.repoisitory import get_all_articles_without_markdown, update_article_markdown
-from app.database.models import ArticleSchema
-from app.scrapers.article import ArticleScraper
 import pprint
-import os
 
-current_path = os.getcwd()
-print(current_path)
+from app.database.models import ArticleSchema
+from app.database.repoisitory import (
+    get_all_articles_without_markdown,
+    update_article_markdown,
+)
+from app.scrapers.article import ArticleScraper
+
 
 def process_articles():
     articles: list[ArticleSchema] = get_all_articles_without_markdown()
@@ -21,6 +22,6 @@ def process_articles():
         else:
             print(f"Failed to convert article: {article.title}")
 
+
 if __name__ == "__main__":
     process_articles()
-

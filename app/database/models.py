@@ -1,9 +1,12 @@
-from sqlalchemy import Column, String, DateTime,Text
-from sqlalchemy.orm import DeclarativeBase
 from datetime import datetime
+
+from sqlalchemy import Column, DateTime, String, Text
+from sqlalchemy.orm import DeclarativeBase
+
 
 class BaseSchema(DeclarativeBase):
     pass
+
 
 class YouTubeVideoSchema(BaseSchema):
     __tablename__ = "youtube_videos"
@@ -30,3 +33,13 @@ class ArticleSchema(BaseSchema):
     published_at = Column(DateTime, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+
+class DigestSchema(BaseSchema):
+    __tablename__ = "digest"
+    id = Column(String, primary_key=True)
+    article_type = Column(String, nullable=False)
+    article_id = Column(String, nullable=False)
+    title = Column(String, nullable=False)
+    url = Column(String, nullable=False)
+    summary = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)

@@ -1,11 +1,10 @@
 import pprint
-from datetime import datetime, timedelta, timezone
-from time import time
+from datetime import UTC, datetime, timedelta
 
 import feedparser
+from docling.document_converter import DocumentConverter
 from feedparser import FeedParserDict
 from pydantic import BaseModel
-from docling.document_converter import DocumentConverter
 
 
 class Article(BaseModel):
@@ -32,15 +31,15 @@ class ArticleScraper:
         except Exception:
             return None
 
-    def get_articles(self, source: str,  hours: int = 24) -> list[Article]:
+    def get_articles(self, source: str, hours: int = 24) -> list[Article]:
         articles: list[Article] = []
 
-        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+        cutoff_time = datetime.now(UTC) - timedelta(hours=hours)
 
         for rss_url in self.rss_urls:
             feed: FeedParserDict = feedparser.parse(rss_url)
 
-            print(f"=== entries ===")
+            print("=== entries ===")
             pprint.pprint(feed.entries)
             for entry in feed.entries:
                 published_parsed = entry.get("published_parsed", None)
@@ -48,9 +47,7 @@ class ArticleScraper:
                 if not published_parsed:
                     continue
 
-                published_time: datetime = datetime(
-                    *published_parsed[:6], tzinfo=timezone.utc
-                )
+                published_time: datetime = datetime(*published_parsed[:6], tzinfo=UTC)
 
                 if published_time >= cutoff_time:
                     # Get category from tags if available
@@ -61,10 +58,10 @@ class ArticleScraper:
                         category = (
                             [first_tag.get("term")] if first_tag.get("term") else None
                         )
-            
+
                     article: Article = Article(
                         title=entry.get("title"),
-                        source = source,
+                        source=source,
                         description=entry.get("summary"),
                         url=entry.get("link"),
                         guid=entry.get("id", entry.get("link", "")),
@@ -78,7 +75,7 @@ class ArticleScraper:
 
 if __name__ == "__main__":
     article_scraper = ArticleScraper(["https://openai.com/news/rss.xml"])
-    articles = article_scraper.get_articles(hours=24 ,source="OpenAI")
+    articles = article_scraper.get_articles(hours=24, source="OpenAI")
     print("---DONE---")
     print(f"Found {len(articles)} articles")
     for article in articles:
