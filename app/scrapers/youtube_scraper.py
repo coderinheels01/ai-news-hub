@@ -1,9 +1,8 @@
 import os
 import pprint
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Optional
 
 import feedparser
 from feedparser import FeedParserDict
@@ -30,7 +29,7 @@ class YouTubeVideo(BaseModel):
     channel_id: str
     published_at: datetime
     description: str
-    transcript: Optional[str] = None
+    transcript: str | None = None
 
 
 class YouTubeScraper:
@@ -38,8 +37,6 @@ class YouTubeScraper:
         proxy_config: WebshareProxyConfig = None
         proxy_username: str = os.getenv("PROXY_USERNAME")
         proxy_password: str = os.getenv("PROXY_PASSWORD")
-        print(f"PROXY_USERNAME: {os.getenv('PROXY_USERNAME')}")
-        print(f"PROXY_PASSWORD: {os.getenv('PROXY_PASSWORD')}")
 
         # if proxy_username and proxy_password:
         #     print("DEBUGGER: using webshare proxy")
@@ -73,7 +70,7 @@ class YouTubeScraper:
             time.sleep(min_limit - duration)
         self.last_request = time.monotonic()
 
-    def _get_transcript(self, video_id: str) -> Optional[YouTubeTranscript]:
+    def _get_transcript(self, video_id: str) -> YouTubeTranscript | None:
         try:
             self._rate_limit()
             transcript: FetchedTranscript = self.youtube_transcript_api.fetch(
@@ -96,11 +93,9 @@ class YouTubeScraper:
             self._get_rss_feed_url(channel_id=channel_id)
         )
         videos: list[YouTubeVideo] = []
-        cut_off_time: datetime = datetime.now(timezone.utc) - timedelta(hours)
+        cut_off_time: datetime = datetime.now(UTC) - timedelta(hours)
         for entry in rss_feed.entries:
-            published_time: datetime = datetime(
-                *entry.published_parsed[:6], tzinfo=timezone.utc
-            )
+            published_time: datetime = datetime(*entry.published_parsed[:6], tzinfo=UTC)
             if published_time >= cut_off_time:
                 video_id: str = self._get_video_id(entry.link)
                 video = YouTubeVideo(
@@ -116,7 +111,9 @@ class YouTubeScraper:
         return videos
 
     def scrape(self, channel_id: str, hours: int = 150) -> list[YouTubeVideo]:
-        videos:list[YouTubeVideo] = self._get_latest_videos(channel_id=channel_id, hours=hours)
+        videos: list[YouTubeVideo] = self._get_latest_videos(
+            channel_id=channel_id, hours=hours
+        )
         for video in videos:
             transcript: YouTubeTranscript = self._get_transcript(video_id=video_id)
             pprint.pprint(transcript)

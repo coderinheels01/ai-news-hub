@@ -1,21 +1,20 @@
-import os
-import pprint
-import sys
+from app.daily_runner import run_daily_pipeline
 
-current_path = f"{os.getcwd()}/app"
-sys.path.append(current_path)
 
-from scrapers.anthropic_scraper import AnthropicArticleScraper
-from scrapers.article import Article, ArticleScraper
-from scrapers.openai_scraper import OpenAIArticleScraper
+def main(hours: int = 24, top_n: int = 10):
+    return run_daily_pipeline(hours=hours, top_n=top_n)
+
 
 if __name__ == "__main__":
-    openai_article_scraper = OpenAIArticleScraper()
-    open_ai_articles: list[Article] = openai_article_scraper.get_articles(hours=48)
-    pprint.pprint(open_ai_articles)
-    anthropic_article_scraper = AnthropicArticleScraper()
-    anthropic_articles: list[Article] = anthropic_article_scraper.get_articles(hours=48)
-    pprint.pprint(anthropic_articles)
-    if len(anthropic_articles) > 0:
-        markdown: str = ArticleScraper.url_to_mark_down(anthropic_articles[0].url)
-        print(markdown)
+    import sys
+
+    hours = 24
+    top_n = 10
+
+    if len(sys.argv) > 1:
+        hours = int(sys.argv[1])
+    if len(sys.argv) > 2:
+        top_n = int(sys.argv[2])
+
+    result = main(hours=hours, top_n=top_n)
+    exit(0 if result["success"] else 1)
