@@ -2,8 +2,9 @@ import pprint
 from datetime import UTC, datetime, timedelta
 
 import feedparser
-from docling.document_converter import DocumentConverter
+import requests
 from feedparser import FeedParserDict
+from html_to_markdown import convert
 from pydantic import BaseModel
 
 
@@ -21,13 +22,15 @@ class ArticleScraper:
     def __init__(self, rss_urls: list[str]):
         self.rss_urls = rss_urls
 
-    @staticmethod
-    def url_to_mark_down(url: str) -> str | None:
-        """Convert a URL to markdown using DocumentConverter."""
+    def url_to_markdown(self, url: str) -> str | None:
         try:
-            document_converter = DocumentConverter()
-            result = document_converter.convert(url)
-            return result.document.export_to_markdown()
+            response = requests.get(
+                url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30
+            )
+            response.raise_for_status()
+            html = response.text
+            markdown = convert(html)
+            return markdown
         except Exception:
             return None
 

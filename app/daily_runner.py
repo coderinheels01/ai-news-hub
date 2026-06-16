@@ -61,7 +61,7 @@ def run_daily_pipeline(hours: int = 24, top_n: int = 10) -> dict:
         )
 
         logger.info("\n[5/5] Generating and sending email digest...")
-        email_result = send_digest_email(hours=hours, top_n=top_n, save_to_file=True)
+        email_result = send_digest_email(hours=hours, top_n=top_n)
         results["email"] = email_result
 
         if email_result["success"]:
