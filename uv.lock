@@ -36,6 +36,7 @@ dependencies = [
     { name = "beautifulsoup4" },
     { name = "docling" },
     { name = "feedparser" },
+    { name = "html-to-markdown" },
     { name = "markdown" },
     { name = "openai" },
     { name = "psycopg2-binary" },
@@ -56,6 +57,7 @@ requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.14.3" },
     { name = "docling", specifier = ">=2.95.0" },
     { name = "feedparser", specifier = ">=6.0.12" },
+    { name = "html-to-markdown", specifier = ">=3.6.11" },
     { name = "markdown", specifier = ">=3.10.2" },
     { name = "openai", specifier = ">=2.38.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.12" },
@@ -761,6 +763,19 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/aa/b2/703569fc881f3284487e68cda7b42179978480da3c438042a6bbbb4a671c/hf_xet-1.5.0-cp37-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:4b35549ce62601b84da4ff9b24d970032ace3d4430f52d91bcbb26c901d6c690", size = 4672414, upload-time = "2026-05-06T06:18:09.864Z" },
     { url = "https://files.pythonhosted.org/packages/af/37/1b6def445c567286b50aa3b33828158e135b1be44938dde59f11382a500c/hf_xet-1.5.0-cp37-abi3-win_amd64.whl", hash = "sha256:2806c7c17b4d23f8d88f7c4814f838c3b6150773fe339c20af23e1cfaf2797e4", size = 3977238, upload-time = "2026-05-06T06:18:23.621Z" },
     { url = "https://files.pythonhosted.org/packages/62/94/3b66b148778ee100dcfd69c2ca22b57b41b44d3063ceec934f209e9184ce/hf_xet-1.5.0-cp37-abi3-win_arm64.whl", hash = "sha256:b6c9df403040248c76d808d3e047d64db2d923bae593eb244c41e425cf6cd7be", size = 3806916, upload-time = "2026-05-06T06:18:21.7Z" },
+]
+
+[[package]]
+name = "html-to-markdown"
+version = "3.6.11"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f5/98/508123c98854a52442e8956627c614ca6c42f91786fbd65884b09189b9bf/html_to_markdown-3.6.11.tar.gz", hash = "sha256:d3bbba16ca15931158a90a1e4c9f0ea7fd95fc92a37c082e831b61bcdf92a365", size = 4362035, upload-time = "2026-06-16T17:04:29.458Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f1/ca/d6e5ecb82b6142a8c670960e47f926609bdbb721e4b853fb3af8badf87c2/html_to_markdown-3.6.11-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:2951a9aeb6fc49ab3e2f54799e2274288f1879ff50853a77d112b9ba69f55f52", size = 6102867, upload-time = "2026-06-16T17:04:24.241Z" },
+    { url = "https://files.pythonhosted.org/packages/af/4d/48d7a783a798889a1555275777e0383824daeaba35aaaf3637c99d7239e6/html_to_markdown-3.6.11-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:8302da18b822541ad985d496dad344b64a0ddacdb3e6dfc9eedcb150e2f9bb4e", size = 5768510, upload-time = "2026-06-16T17:04:32.416Z" },
+    { url = "https://files.pythonhosted.org/packages/7e/94/27c06ab219f3a4cccbcdbc24c84c1f148ae25a3b7fc34ad40c8f0ed091d3/html_to_markdown-3.6.11-cp310-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:5a53f7f2aeeed5330e4df143de93427e3e78e5441a3affa58762b07c14fc1b46", size = 5921889, upload-time = "2026-06-16T17:04:30.798Z" },
+    { url = "https://files.pythonhosted.org/packages/52/81/a02dc61e2f8ef341af152e6fdc33a887574488797226ab69801bd2c5e7e7/html_to_markdown-3.6.11-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:2698d0aa56b32328a146ff88065c3bb4a60202eb9fe3ef6f93e652652763b50f", size = 6294594, upload-time = "2026-06-16T17:04:27.875Z" },
+    { url = "https://files.pythonhosted.org/packages/d7/fe/f381e8033992ac7143c6762644f3ebe881b083fcbe937c144f623350feca/html_to_markdown-3.6.11-cp310-abi3-win_amd64.whl", hash = "sha256:c74d59543a9f1e901fb5fe606ca9d8c6558bbeb1d4cd145a256d40f0c63e31aa", size = 6313569, upload-time = "2026-06-16T17:04:26.069Z" },
 ]
 
 [[package]]
