@@ -15,6 +15,7 @@ def drop_tables(table_name: str):
 
 
 if __name__ == "__main__":
-    # drop_tables()
     drop_tables("digest")
+    drop_tables("digest")
+
     create_tables()

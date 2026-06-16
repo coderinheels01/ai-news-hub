@@ -26,7 +26,7 @@ class DigestAgentResponse(BaseModel):
 
 class DigestAgent:
     def __init__(self):
-        self.client = OpenAI(os.get("OPENAI_API_KEY"))
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.model = "gpt-4o-mini"
         self.system_prompt = SYSTEM_PROMPT
 

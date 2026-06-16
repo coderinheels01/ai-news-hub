@@ -32,6 +32,9 @@ class Digest(BaseModel):
 
 
 def bulk_insert_youtube_videos(videos: list[YouTubeVideo]):
+    if not videos:
+        print("No videos to insert, skipping")
+        return None
     with db_connection.get_session() as session:
         statement: Insert = insert(YouTubeVideoSchema).values(
             [v.model_dump() for v in videos]
@@ -47,6 +50,9 @@ def bulk_insert_youtube_videos(videos: list[YouTubeVideo]):
 
 
 def bulk_insert_articles(articles: list[Article]):
+    if not articles:
+        print("No articles to insert, skipping")
+        return None
     with db_connection.get_session() as session:
         statement: Insert = insert(ArticleSchema).values(
             [a.model_dump() for a in articles]
@@ -60,6 +66,9 @@ def bulk_insert_articles(articles: list[Article]):
 
 
 def insert_digest(digest: DigestSchema):
+    if not digest:
+        print("No digest to insert, skipping")
+        return None
     with db_connection.get_session() as session:
         try:
             session.add(digest)
@@ -156,6 +165,7 @@ def get_undigested_articles(limit: int | None = None) -> list[NormalizedArticle]
             )
 
         return undigested_articles
+
 
 def get_recent_digests(hours: int = 24) -> list[Digest]:
     cutoff_time = datetime.now(UTC) - timedelta(hours=hours)

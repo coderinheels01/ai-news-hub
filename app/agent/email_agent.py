@@ -86,8 +86,7 @@ class EmailAgent:
                 text_format=EmailIntroduction,
             )
 
-            ranked_list = response.output_parsed
-            return ranked_list.articles if ranked_list else []
+            return response.output_parsed
         except Exception as e:
             print(f"Error generating introduction: {e}")
             current_date = datetime.now().strftime("%B %d, %Y")
@@ -102,8 +101,10 @@ class EmailAgent:
         total_ranked: int,
         limit: int = 10,
     ) -> EmailResponse:
-        top_articles = ranked_articles[:limit]
-        introduction = self.generate_introduction(ranked_articles=top_articles)
+        top_articles: list[RankedArticle] = ranked_articles[:limit]
+        introduction: EmailIntroduction = self.generate_introduction(
+            ranked_articles=top_articles
+        )
 
         return EmailResponse(
             introduction=introduction,

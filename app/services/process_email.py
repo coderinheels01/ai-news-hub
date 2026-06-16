@@ -52,7 +52,7 @@ def generate_email_digest(hours: int = 24, top_n: int = 10) -> EmailResponse:
     return email_digest
 
 
-def send_digest_email(hours: int = 24, top_n: int = 10) -> dict:
+def send_digest_email(hours: int = 24, top_n: int = 10, save_to_file=False) -> dict:
     try:
         result = generate_email_digest(hours=hours, top_n=top_n)
         markdown_content = result.to_markdown()
@@ -64,7 +64,7 @@ def send_digest_email(hours: int = 24, top_n: int = 10) -> dict:
             subject=subject,
             body_text=markdown_content,
             body_html=html_content,
-            save_to_file=True,
+            save_to_file=save_to_file,
         )
 
         logger.info("Email sent successfully!")
