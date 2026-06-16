@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from app.database.connection import engine
+from app.database.models import BaseSchema
 from app.runner import run_scrapers
 from app.services.process_digest import process_digests
 from app.services.process_email import send_digest_email
@@ -34,6 +36,14 @@ def run_daily_pipeline(hours: int = 24, top_n: int = 10) -> dict:
     }
 
     try:
+        logger.info("\n[0/5] Ensuring database tables exist...")
+        try:
+            with engine.connect():
+                BaseSchema.metadata.create_all(engine)
+                logger.info("✓ Database tables verified/created")
+        except Exception as e:
+            logger.error(f"Failed to create database tables: {e}")
+            raise
         logger.info("\n[1/5] Scraping articles from sources...")
         scraping_results = run_scrapers(hours=hours)
         results["scraping"] = {
