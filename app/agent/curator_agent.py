@@ -18,6 +18,9 @@ class RankedArticle(BaseModel):
     reasoning: str = Field(
         description="Brief explanation of why this article is ranked here"
     )
+    title: str
+    url: str
+    summary: str
 
 
 class RankedDigestList(BaseModel):
@@ -87,7 +90,7 @@ Preferences:
 
 {digest_list}
 
-Provide a relevance score (0.0-10.0) and rank (1-{len(digests)}) for each article, ordered from most to least relevant."""
+For each article, provide the digest ID, relevance score (0.0-10.0), rank (1-{len(digests)}), reasoning, and original article details (title, summary, url, article_type). Order from most to least relevant."""
 
         try:
             response = self.client.responses.parse(
