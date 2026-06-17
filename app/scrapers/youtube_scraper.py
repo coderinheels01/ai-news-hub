@@ -1,5 +1,5 @@
+import logging
 import os
-import pprint
 import time
 from datetime import UTC, datetime, timedelta
 from enum import Enum
@@ -10,6 +10,8 @@ from pydantic import BaseModel
 from youtube_transcript_api import FetchedTranscript, YouTubeTranscriptApi
 from youtube_transcript_api._errors import NoTranscriptFound, TranscriptsDisabled
 from youtube_transcript_api.proxies import WebshareProxyConfig
+
+logger = logging.getLogger(__name__)
 
 
 class YouTubeUrlPattern(Enum):
@@ -39,7 +41,6 @@ class YouTubeScraper:
         proxy_password: str = os.getenv("PROXY_PASSWORD")
 
         # if proxy_username and proxy_password:
-        #     print("DEBUGGER: using webshare proxy")
         #     proxy_config = WebshareProxyConfig(
         #         proxy_username=proxy_username, proxy_password=proxy_password
         #     )
@@ -51,7 +52,7 @@ class YouTubeScraper:
         return f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
 
     def _get_video_id(self, video_link: str) -> str:
-        print(f"DEBUG: video_link - {video_link}")
+        logger.debug(f"Parsing video_link: {video_link}")
         if YouTubeUrlPattern.WATCH.value in video_link:
             return video_link.split("v=")[1].split("&")[0]
         elif YouTubeUrlPattern.SHORTS.value in video_link:
@@ -80,12 +81,10 @@ class YouTubeScraper:
             transcript = YouTubeTranscript(text=text)
             return transcript
         except (TranscriptsDisabled, NoTranscriptFound) as e:
-            print(
-                f"DEBUG: No transcript exception for video_id - {video_id}- ERROR: {e}"
-            )
+            logger.warning(f"No transcript available for video {video_id}: {e}")
             return None
         except Exception as e:
-            print(f"DEBUG: Exception for video_id - {video_id}- ERROR: {e}")
+            logger.error(f"Failed to fetch transcript for video {video_id}: {e}")
             return None
 
     def _get_latest_videos(self, channel_id: str, hours: int) -> list[YouTubeVideo]:
@@ -115,12 +114,17 @@ class YouTubeScraper:
             channel_id=channel_id, hours=hours
         )
         for video in videos:
-            transcript: YouTubeTranscript = self._get_transcript(video_id=video_id)
-            pprint.pprint(transcript)
+            transcript: YouTubeTranscript = self._get_transcript(
+                video_id=video.video_id
+            )
+            logger.debug(f"Transcript for {video.video_id}: {transcript}")
             video.transcript = transcript
         return videos
 
 
 if __name__ == "__main__":
+    from app.logging_config import configure_logging
+
+    configure_logging()
     scraper = YouTubeScraper()
     scraper.scrape(channel_id="UCn8ujwUInbJkBhffxqAPBVQ", hours=24)

@@ -1,5 +1,9 @@
+import logging
+
 from app.database.connection import db_connection
 from app.database.models import BaseSchema
+
+logger = logging.getLogger(__name__)
 
 
 def create_tables():
@@ -11,7 +15,7 @@ def drop_tables(table_name: str):
     if table is not None:
         table.drop(db_connection.get_engine())
     else:
-        print(f"table {table_name} not found")
+        logger.warning(f"Table '{table_name}' not found")
 
 
 if __name__ == "__main__":

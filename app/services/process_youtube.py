@@ -1,4 +1,4 @@
-import pprint
+import logging
 
 from app.database.models import YouTubeVideoSchema
 from app.database.repoisitory import (
@@ -7,10 +7,12 @@ from app.database.repoisitory import (
 )
 from app.scrapers.youtube_scraper import YouTubeScraper, YouTubeTranscript
 
+logger = logging.getLogger(__name__)
+
 
 def process_youtube_transcripts():
     videos: list[YouTubeVideoSchema] = get_all_youtube_videos_without_markdown()
-    pprint.pprint(videos)
+    logger.info(f"Processing transcripts for {len(videos)} videos")
     scraper = YouTubeScraper()
     processed = 0
     unprocessed = 0

@@ -7,16 +7,13 @@ load_dotenv()
 
 from app.database.connection import db_connection
 from app.database.models import BaseSchema
+from app.logging_config import configure_logging
 from app.runner import run_scrapers
 from app.services.process_digest import process_digests
 from app.services.process_email import send_digest_email
 from app.services.process_youtube import process_youtube_transcripts
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
+configure_logging()
 logger = logging.getLogger(__name__)
 
 

@@ -1,3 +1,4 @@
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -7,6 +8,8 @@ from pydantic import BaseModel, Field
 from app.database.repoisitory import Digest
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 
 class RankedArticle(BaseModel):
@@ -104,5 +107,5 @@ For each article, provide the digest ID, relevance score (0.0-10.0), rank (1-{le
             ranked_list = response.output_parsed
             return ranked_list.articles if ranked_list else []
         except Exception as e:
-            print(f"Error ranking digests: {e}")
+            logger.error(f"Error ranking digests: {e}")
             return []

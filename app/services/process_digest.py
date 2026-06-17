@@ -1,3 +1,5 @@
+import logging
+
 from app.agent.digest_agent import DigestAgent, DigestAgentResponse
 from app.database.models import DigestSchema
 from app.database.repoisitory import (
@@ -5,6 +7,8 @@ from app.database.repoisitory import (
     get_undigested_articles,
     insert_digest,
 )
+
+logger = logging.getLogger(__name__)
 
 digest_agent = DigestAgent()
 
@@ -31,7 +35,7 @@ def process_digests():
             insert_digest(digest_schema)
             processed += 1
         except Exception as e:
-            print(f"Failed to process digest for {a.article_id}: {e}")
+            logger.error(f"Failed to process digest for {a.article_id}: {e}")
             failed += 1
 
     return {"processed": processed, "failed": failed, "total": len(undigested_articles)}

@@ -1,4 +1,4 @@
-import pprint
+import logging
 from datetime import UTC, datetime, timedelta
 
 import feedparser
@@ -6,6 +6,8 @@ import requests
 from feedparser import FeedParserDict
 from html_to_markdown import convert
 from pydantic import BaseModel
+
+logger = logging.getLogger(__name__)
 
 
 class Article(BaseModel):
@@ -42,8 +44,7 @@ class ArticleScraper:
         for rss_url in self.rss_urls:
             feed: FeedParserDict = feedparser.parse(rss_url)
 
-            print("=== entries ===")
-            pprint.pprint(feed.entries)
+            logger.debug(f"Fetched {len(feed.entries)} entries from {rss_url}")
             for entry in feed.entries:
                 published_parsed = entry.get("published_parsed", None)
 
@@ -77,9 +78,12 @@ class ArticleScraper:
 
 
 if __name__ == "__main__":
+    from app.logging_config import configure_logging
+
+    configure_logging()
     article_scraper = ArticleScraper(["https://openai.com/news/rss.xml"])
     articles = article_scraper.get_articles(hours=24, source="OpenAI")
-    print("---DONE---")
-    print(f"Found {len(articles)} articles")
+    logger.info("---DONE---")
+    logger.info(f"Found {len(articles)} articles")
     for article in articles:
-        pprint.pprint(article)
+        logger.info(str(article))

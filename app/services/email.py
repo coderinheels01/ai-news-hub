@@ -1,4 +1,5 @@
 import html
+import logging
 import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -10,6 +11,8 @@ from dotenv import load_dotenv
 from app.agent.email_agent import EmailResponse
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 MY_EMAIL = os.getenv("MY_EMAIL")
 APP_PASSWORD = os.getenv("APP_PASSWORD")
@@ -47,7 +50,7 @@ def send_email(
             f.write(f"To: {', '.join(recipients)}\n")
             f.write("---\n\n")
             f.write(body_html if body_html else body_text)
-        print(f"Email saved to {filename}")
+        logger.info(f"Email saved to {filename}")
         return
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:

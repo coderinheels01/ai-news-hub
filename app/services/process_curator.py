@@ -1,23 +1,15 @@
 import logging
-import os
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
-
-curr_path = os.getcwd()
-print(curr_path)
-
 from app.agent.curator_agent import CuratorAgent, RankedArticle
 from app.database.repoisitory import get_recent_digests
+from app.logging_config import configure_logging
 from app.profiles.user_profiles import USER_PROFILE
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
+configure_logging()
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +62,6 @@ def curate_digests(hours: int = 24) -> dict:
 
 if __name__ == "__main__":
     result = curate_digests(hours=1148)
-    print("\n=== Curation Results ===")
-    print(f"Total digests: {result['total']}")
-    print(f"Ranked: {result['ranked']}")
+    logger.info("\n=== Curation Results ===")
+    logger.info(f"Total digests: {result['total']}")
+    logger.info(f"Ranked: {result['ranked']}")

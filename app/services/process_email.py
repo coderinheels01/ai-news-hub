@@ -1,22 +1,17 @@
-from dotenv import load_dotenv
-
-load_dotenv()
-
 import logging
+
+from dotenv import load_dotenv
 
 from app.agent.curator_agent import CuratorAgent
 from app.agent.email_agent import EmailAgent, EmailResponse
 from app.database.repoisitory import get_recent_digests
+from app.logging_config import configure_logging
 from app.profiles.user_profiles import USER_PROFILE
 from app.services.email import digest_to_html, send_email
 
-# from app.services.email import digest_to_html, send_email
+load_dotenv()
+configure_logging()
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
 logger = logging.getLogger(__name__)
 
 
@@ -81,8 +76,8 @@ def send_digest_email(hours: int = 24, top_n: int = 10, save_to_file=False) -> d
 if __name__ == "__main__":
     result = send_digest_email(hours=1124, top_n=10)
     if result["success"]:
-        print("\n=== Email Digest Sent ===")
-        print(f"Subject: {result['subject']}")
-        print(f"Articles: {result['articles_count']}")
+        logger.info("\n=== Email Digest Sent ===")
+        logger.info(f"Subject: {result['subject']}")
+        logger.info(f"Articles: {result['articles_count']}")
     else:
-        print(f"Error: {result['error']}")
+        logger.error(f"Error: {result['error']}")

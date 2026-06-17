@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import datetime
 
@@ -5,6 +6,8 @@ from openai import OpenAI
 from pydantic import BaseModel, Field
 
 from app.agent.curator_agent import RankedArticle
+
+logger = logging.getLogger(__name__)
 
 
 class EmailIntroduction(BaseModel):
@@ -88,7 +91,7 @@ class EmailAgent:
 
             return response.output_parsed
         except Exception as e:
-            print(f"Error generating introduction: {e}")
+            logger.error(f"Error generating introduction: {e}")
             current_date = datetime.now().strftime("%B %d, %Y")
             return EmailIntroduction(
                 greeting=f"Hey {self.user_profile['name']}, here is your daily digest of AI news for {current_date}.",

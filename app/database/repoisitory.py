@@ -1,3 +1,4 @@
+import logging
 from datetime import UTC, datetime, timedelta
 
 from pydantic import BaseModel
@@ -10,6 +11,8 @@ from app.database.connection import db_connection
 from app.database.models import ArticleSchema, DigestSchema, YouTubeVideoSchema
 from app.scrapers.article import Article
 from app.scrapers.youtube_scraper import YouTubeVideo
+
+logger = logging.getLogger(__name__)
 
 
 class NormalizedArticle(BaseModel):
@@ -33,7 +36,7 @@ class Digest(BaseModel):
 
 def bulk_insert_youtube_videos(videos: list[YouTubeVideo]):
     if not videos:
-        print("No videos to insert, skipping")
+        logger.info("No videos to insert, skipping")
         return None
     with db_connection.get_session() as session:
         statement: Insert = insert(YouTubeVideoSchema).values(
@@ -44,14 +47,13 @@ def bulk_insert_youtube_videos(videos: list[YouTubeVideo]):
         )
         result: CursorResult = session.execute(statement)
         session.commit()
-        print("---result---")
-        print(f"{result.rowcount} rows inserted")
+        logger.info(f"{result.rowcount} rows inserted")
         return result
 
 
 def bulk_insert_articles(articles: list[Article]):
     if not articles:
-        print("No articles to insert, skipping")
+        logger.info("No articles to insert, skipping")
         return None
     with db_connection.get_session() as session:
         statement: Insert = insert(ArticleSchema).values(
@@ -60,23 +62,22 @@ def bulk_insert_articles(articles: list[Article]):
         statement: Insert = statement.on_conflict_do_nothing(index_elements=["guid"])
         result = session.execute(statement)
         session.commit()
-        print("---result---")
-        print(f"{result.rowcount} rows inserted")
+        logger.info(f"{result.rowcount} rows inserted")
         return result
 
 
 def insert_digest(digest: DigestSchema):
     if not digest:
-        print("No digest to insert, skipping")
+        logger.info("No digest to insert, skipping")
         return None
     with db_connection.get_session() as session:
         try:
             session.add(digest)
             session.commit()
-            print(f"DEBUG: digest with id {digest.id} inserted")
+            logger.debug(f"Digest with id {digest.id} inserted")
         except Exception:
             session.rollback()
-            print(f"DEBUG: digest with id {digest.id} already exists, skipping")
+            logger.debug(f"Digest with id {digest.id} already exists, skipping")
 
 
 def update_article_markdown(guid: str, markdown: str) -> bool:
@@ -123,7 +124,7 @@ def get_undigested_articles(limit: int | None = None) -> list[NormalizedArticle]
             .all()
         )
 
-        print(f"DEBUG: {len(videos)} videos found")
+        logger.debug(f"{len(videos)} videos found")
 
         for video in videos:
             undigested_articles.append(
@@ -150,7 +151,7 @@ def get_undigested_articles(limit: int | None = None) -> list[NormalizedArticle]
             .all()
         )
 
-        print(f"DEBUG: {len(articles)} articles found")
+        logger.debug(f"{len(articles)} articles found")
 
         for article in articles:
             undigested_articles.append(

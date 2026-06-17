@@ -47,8 +47,14 @@ db_connection = Connection()
 
 
 if __name__ == "__main__":
+    import logging
+
+    from app.logging_config import configure_logging
+
+    configure_logging()
+    _logger = logging.getLogger(__name__)
     session: Session = db_connection.get_session()
-    print(session)
-    print(f"Session type: {type(session)}")
-    print(f"SessionLocal type: {type(db_connection.SessionLocal)}")
-    session.close()  # Don't forget to close the session
+    _logger.info(str(session))
+    _logger.info(f"Session type: {type(session)}")
+    _logger.info(f"SessionLocal type: {type(db_connection.SessionLocal)}")
+    session.close()

@@ -1,11 +1,12 @@
-import os
-import pprint
+import logging
 
 from app.database.repoisitory import bulk_insert_articles, bulk_insert_youtube_videos
 from app.scrapers.anthropic_scraper import AnthropicArticleScraper
 from app.scrapers.openai_scraper import OpenAIArticleScraper
 from app.scrapers.youtube_scraper import YouTubeScraper, YouTubeVideo
 from config import YOUTUBE_CHANNELS
+
+logger = logging.getLogger(__name__)
 
 
 def run_scrapers(hours: str = 24):
@@ -19,16 +20,16 @@ def run_scrapers(hours: str = 24):
 
     bulk_insert_youtube_videos(videos)
 
-    print(f"DEBUG: found ${len(videos)} youtube videos")
+    logger.info(f"Found {len(videos)} youtube videos")
 
     anthropic_scraper = AnthropicArticleScraper()
     anthropic_articles = anthropic_scraper.get_articles(hours=hours)
-    pprint.pprint(f"DEBUG: found ${len(anthropic_articles)} anthropic articles")
+    logger.info(f"Found {len(anthropic_articles)} anthropic articles")
     bulk_insert_articles(articles=anthropic_articles)
 
     openai_scraper = OpenAIArticleScraper()
     openai_articles = openai_scraper.get_articles(hours=hours)
-    print(f"DEBUG: found {len(openai_articles)} openai articles")
+    logger.info(f"Found {len(openai_articles)} openai articles")
     bulk_insert_articles(articles=openai_articles)
 
     return {
@@ -40,5 +41,3 @@ def run_scrapers(hours: str = 24):
 
 if __name__ == "__main__":
     run_scrapers()
-
-print(os.getcwd())
