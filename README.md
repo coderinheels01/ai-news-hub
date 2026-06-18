@@ -167,17 +167,19 @@ uv run python -m app.daily_runner
 
 ### Environment Variables
 
-| Variable            | Description                                                             |
-|---------------------|-------------------------------------------------------------------------|
-| `DATABASE_URL`      | Full PostgreSQL connection string (takes priority over individual vars) |
-| `POSTGRES_USER`     | Local DB user                                                           |
-| `POSTGRES_PASSWORD` | Local DB password                                                       |
-| `POSTGRES_HOST`     | Local DB host (default: `localhost`)                                    |
-| `POSTGRES_PORT`     | Local DB port (default: `5432`)                                         |
-| `POSTGRES_DB`       | Local DB name                                                           |
-| `OPENAI_API_KEY`    | OpenAI API key                                                          |
-| `MY_EMAIL`          | Gmail address to send digest from/to                                    |
-| `APP_PASSWORD`      | Gmail app password                                                      |
+| Variable             | Description                                                             |
+|----------------------|-------------------------------------------------------------------------|
+| `DATABASE_URL`       | Full PostgreSQL connection string (takes priority over individual vars) |
+| `POSTGRES_USER`      | Local DB user                                                           |
+| `POSTGRES_PASSWORD`  | Local DB password                                                       |
+| `POSTGRES_HOST`      | Local DB host (default: `localhost`)                                    |
+| `POSTGRES_PORT`      | Local DB port (default: `5432`)                                         |
+| `POSTGRES_DB`        | Local DB name                                                           |
+| `OPENAI_API_KEY`     | OpenAI API key                                                          |
+| `MY_EMAIL`           | Gmail address to send digest from/to                                    |
+| `APP_PASSWORD`       | Gmail app password                                                      |
+| `WEBSHARE_USERNAME`  | Webshare proxy username (optional, for avoiding YouTube IP blocks)      |
+| `WEBSHARE_PASSWORD`  | Webshare proxy password (optional, for avoiding YouTube IP blocks)      |
 
 ---
 
@@ -197,7 +199,7 @@ Environment variables (`OPENAI_API_KEY`, `MY_EMAIL`, `APP_PASSWORD`) are configu
 
 ## Adding a New Scraper
 
-The scraper system is designed to be extended. Here's how to add a new article source — using Google Gemini as an example.
+The scraper system is designed to be extended. Here is how to add a new article source — using Google Gemini as an example.
 
 ### 1. Find the RSS feed
 
@@ -227,8 +229,6 @@ class GeminiArticleScraper(ArticleScraper):
         return super().get_articles(hours=hours, source="Gemini")
 ```
 
-If the source has multiple feeds (like Anthropic), pass them all in the `rss_urls` list.
-
 ### 3. Wire it into the runner
 
 In `app/runner.py`, import and call your new scraper alongside the existing ones:
@@ -248,13 +248,13 @@ def run_scrapers(hours: str = 24):
         "youtube": videos,
         "anthropic": anthropic_articles,
         "openai": openai_articles,
-        "gemini": gemini_articles,  # add to return dict
+        "gemini": gemini_articles,
     }
 ```
 
-### 4. Update the digest query (if needed)
+### 4. Update the digest query
 
-In `app/database/repoisitory.py`, the `get_undigested_articles` function filters which sources get digested. Add your new source:
+In `app/database/repoisitory.py`, add your new source to `get_undigested_articles`:
 
 ```python
 articles: list[ArticleSchema] = (
@@ -273,8 +273,58 @@ articles: list[ArticleSchema] = (
 )
 ```
 
-> **Note:** Anthropic requires `markdown` to be populated first because its articles need full content fetching. OpenAI and most other sources work from the RSS description alone, so they don't need this extra step.
+> **Note:** Anthropic requires `markdown` to be populated first because its articles need full content fetching. OpenAI and most other sources work from the RSS description alone.
 
 ### 5. That's it
 
-The rest of the pipeline (digest generation, curation, email) picks up the new articles automatically — no other changes needed.
+The rest of the pipeline (digest generation, curation, email) picks up the new articles automatically.
+
+---
+
+## Avoiding YouTube IP Blocks (Webshare Proxy)
+
+YouTube blocks IP addresses from cloud providers (AWS, Google Cloud, Render, etc.) when fetching transcripts. If you see `RequestBlocked` or `IpBlocked` errors, you need to route transcript requests through a rotating residential proxy. This project uses [Webshare](https://www.webshare.io/?referral_code=w0xno53eb50g) for this.
+
+### 1. Create a Webshare account and purchase a plan
+
+1. Sign up at [webshare.io](https://www.webshare.io/?referral_code=w0xno53eb50g)
+2. Purchase a **"Residential"** proxy package — make sure it is specifically **Residential**, NOT "Proxy Server" or "Static Residential". Rotating residential proxies are required to avoid bans.
+
+### 2. Get your credentials
+
+1. Go to [Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings)
+2. Copy your **Proxy Username** and **Proxy Password**
+
+### 3. Add them to your environment
+
+In your `.env`:
+
+```env
+WEBSHARE_USERNAME=your_proxy_username
+WEBSHARE_PASSWORD=your_proxy_password
+```
+
+For Render, add both as environment variables in the dashboard under your cron job service.
+
+### 4. Enable the proxy in the scraper
+
+In `app/scrapers/youtube_scraper.py`, the proxy config is already wired up but commented out. Uncomment it:
+
+```python
+if proxy_username and proxy_password:
+    proxy_config = WebshareProxyConfig(
+        proxy_username=proxy_username,
+        proxy_password=proxy_password,
+    )
+```
+
+Once enabled, all transcript requests will route through Webshare's rotating residential proxy pool, bypassing YouTube's IP blocks.
+
+> Optionally restrict to specific countries to reduce latency:
+> ```python
+> proxy_config = WebshareProxyConfig(
+>     proxy_username=proxy_username,
+>     proxy_password=proxy_password,
+>     filter_ip_locations=["us"],
+> )
+> ```
