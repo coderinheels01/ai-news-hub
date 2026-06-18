@@ -24,7 +24,7 @@ flowchart TD
         DA[Digest Agent\ngpt-4o-mini]
     end
 
-    subgraph DB[(PostgreSQL)]
+    subgraph DB["PostgreSQL"]
         VT[youtube_videos]
         AR[article]
         DG[digest]
