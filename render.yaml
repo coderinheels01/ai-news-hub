@@ -9,7 +9,7 @@ services:
     name: daily-digest-job
     env: docker
     dockerfilePath: ./Dockerfile
-    schedule: "25 9 * * *"
+    schedule: "55 9 * * *"
     dockerCommand: python main.py
     envVars:
       - key: DATABASE_URL

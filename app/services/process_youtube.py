@@ -18,14 +18,22 @@ def process_youtube_transcripts():
     unprocessed = 0
     for video in videos:
         transcript: YouTubeTranscript = scraper._get_transcript(video_id=video.video_id)
-        update_youtube_transcript(video_id=video.video_id, transcript=transcript.text)
         if (
             transcript is None
-            or transcript.text == "__UNAVAILABLE__"
             or transcript.text is None
+            or transcript.text == "__UNAVAILABLE__"
         ):
+            logger.warning(
+                f"No transcript available for {video.video_id}, marking as unavailable"
+            )
+            update_youtube_transcript(
+                video_id=video.video_id, transcript="__UNAVAILABLE__"
+            )
             unprocessed += 1
         else:
+            update_youtube_transcript(
+                video_id=video.video_id, transcript=transcript.text
+            )
             processed += 1
     return {"processed": processed, "unprocessed": unprocessed}
 
